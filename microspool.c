@@ -10,6 +10,7 @@
 
 #define _GNU_SOURCE
 #include <stdio.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -1740,8 +1741,12 @@ static void route_and_dispatch(Conn *c, HttpRequestMeta *m, const char *body, si
         cJSON_AddStringToObject(o, "microspool_version", MICROSPOOL_VERSION);
         cJSON_AddBoolToObject(o, "debug_mode", 0);
         cJSON_AddBoolToObject(o, "automatic_backups", 0);
-        char abspath[1024];
-        if (!realpath(g_data_path, abspath)) strncpy(abspath, g_data_path, sizeof abspath - 1);
+        /* realpath() пишет до PATH_MAX (на Linux 4096, на macOS 1024) — буфер меньше PATH_MAX
+           означает затирание стека, поэтому просим glibc/musl выделить память сами (POSIX.1-2008). */
+        char *resolved = realpath(g_data_path, NULL);
+        char abspath[PATH_MAX];
+        snprintf(abspath, sizeof abspath, "%s", resolved ? resolved : g_data_path);
+        free(resolved);
         cJSON_AddStringToObject(o, "data_dir", abspath);
         cJSON_AddStringToObject(o, "backups_dir", "");
         cJSON_AddStringToObject(o, "db_type", "microspool");
