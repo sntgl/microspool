@@ -1515,7 +1515,10 @@ static void conn_try_flush(Conn *c) {
         return;
     }
     c->tx_len = 0; c->tx_sent = 0;
-    if (c->close_after_flush) { conn_reset(c); return; }
+    /* Ответ отправлен целиком. Мы всегда шлём `Connection: close`, поэтому закрываем сами, не дожидаясь
+       FIN от клиента: иначе слот держится до idle-таймаута (10 с) и на восьми подряд запросах сервер
+       начинает отвергать новые соединения (ловилось в CI на Linux). */
+    if (c->close_after_flush || c->state == CS_HTTP_CLOSING) { conn_reset(c); return; }
 }
 
 /* ------------------------------------------------------------------------ */
