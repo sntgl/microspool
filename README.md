@@ -1,16 +1,20 @@
 # microspool
 
-Tiny [Spoolman](https://github.com/Donkie/Spoolman)-compatible spool server for low-memory Klipper hosts.
-Single static C binary: **~105–115 KB**, **~0.2 MB RAM**. Built for the FlashForge AD5M
-([Z-Mod](https://github.com/ghzserg/zmod), 128 MB RAM), works with any Moonraker.
+Track your 3D printing filament spools — material, colour and grams left — **on the printer itself**.
+microspool speaks the [Spoolman](https://github.com/Donkie/Spoolman) REST API, so Moonraker subtracts
+filament usage while you print and Fluidd, Mainsail and HelixScreen show your spools as usual.
 
-Implements only what Moonraker and HelixScreen use: `vendor` / `filament` / `spool` CRUD,
-`spool/{id}/use`, `info`, `health`, and the `/api/v1/spool` WebSocket. Data is one JSON file.
-No auth, no SpoolmanDB. Not affiliated with Spoolman.
+A single static C binary: **~106 KB on disk, ~0.2 MB RAM**. No Python, no database, no second host.
+That is the point: a printer like the FlashForge Adventurer 5M running
+[Z-Mod](https://github.com/ghzserg/zmod) has 128 MB of RAM for Klipper, Moonraker and the touchscreen —
+nothing left over for a filament inventory service, so this one had to be tiny.
 
-Includes a tiny built-in web UI at `http://<host>:7912/` (run with `-l 0.0.0.0` to reach it
-from other devices — there is no auth, so only do this on a trusted network); pass `-U` to
-disable it entirely.
+It implements the part of the Spoolman API that Moonraker and the interfaces actually call:
+`vendor` / `filament` / `spool` CRUD, `spool/{id}/use`, `info`, `health`, materials / locations /
+lot numbers and the `/api/v1/spool` WebSocket. The inventory lives in one JSON file. A built-in web UI
+(~8 KB gzipped) is served at `http://<host>:7912/` when started with `-l 0.0.0.0` — there is no auth, so
+keep it on a trusted network; `-U` disables it. No SpoolmanDB mirror, no multi-printer inventory: if your
+host can run Spoolman, run Spoolman. Independent project, not affiliated with it.
 
 ## Status
 
