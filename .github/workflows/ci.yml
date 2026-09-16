@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+      - uses: astral-sh/setup-uv@v6
+      - name: Native build and tests
+        run: make test CC_NATIVE=cc
+      - name: Static release binaries
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          case "$GITHUB_REF" in refs/tags/v*) ;; *) VERSION="0.0.0-${GITHUB_SHA::7}" ;; esac
+          make release VERSION="$VERSION"
+          make size
+      - uses: actions/upload-artifact@v4
+        with:
+          name: microspool-binaries
+          path: build/microspool-*
+      - name: GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/microspool-*

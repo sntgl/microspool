@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>microspool</title>
+<style>:root{--a:#f4f5f7;--b:#fff;--c:#15181e;--d:#6b7280;--e:#dde1e6;--f:#2563eb;--g:#fff;--h:#16a34a;--i:#dc2626}@media (prefers-color-scheme:dark){:root{--a:#14161b;--b:#1d2026;--c:#eceef1;--d:#9aa2ad;--e:#333944;--f:#5b8def;--g:#0b1020;--h:#4ade80;--i:#f87171}}*{box-sizing:border-box}body{margin:0;background:var(--a);color:var(--c);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:40px}h1,h2{margin:0 0 8px}h1{font-size:19px}h2{font-size:15px;color:var(--d);margin-top:22px}.topbar{position:sticky;top:0;z-index:10;background:var(--a);padding:14px 14px 0;border-bottom:1px solid var(--e)}.tabs{display:flex;gap:4px;margin-top:10px;overflow-x:auto}.tab-btn{background:none;border:none;color:var(--d);padding:8px 12px;border-bottom:2px solid transparent;cursor:pointer;font-size:14px;white-space:nowrap}.tab-btn.active{color:var(--c);border-bottom-color:var(--f);font-weight:600}main{max-width:1000px;margin:0 auto;padding:14px}.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}.toolbar input[type=search]{flex:1;min-width:140px}.chk{display:flex;align-items:center;gap:6px;color:var(--d);font-size:13px;white-space:nowrap}input,select,textarea{background:var(--b);color:var(--c);border:1px solid var(--e);border-radius:8px;padding:9px 10px;font-size:15px;width:100%}input[type=checkbox]{width:auto}input[type=color]{padding:2px;height:38px}.btn{background:var(--b);color:var(--c);border:1px solid var(--e);border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer}.btn-primary{background:var(--f);color:var(--g);border-color:var(--f)}.btn-danger{color:var(--i);border-color:var(--i)}.btn-icon{background:none;border:none;color:var(--d);font-size:16px;cursor:pointer;padding:2px 6px}.grid{display:grid;grid-template-columns:1fr;gap:12px}@media (min-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}.grid2{display:grid;grid-template-columns:1fr;gap:10px}@media (min-width:420px){.grid2{grid-template-columns:1fr 1fr}}.card{background:var(--b);border:1px solid var(--e);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}.card.archived{opacity:.6}.card-head{display:flex;align-items:center;gap:8px}.dot{width:16px;height:16px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.15);display:inline-block;vertical-align:middle}.card-title{flex:1;min-width:0}.ct-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ct-sub{color:var(--d);font-size:12px}.badge{font-size:11px;padding:3px 7px;border-radius:999px;background:var(--a);border:1px solid var(--e);color:var(--d);white-space:nowrap}.badge-good{color:var(--h);border-color:var(--h)}.progress{height:6px;border-radius:999px;background:var(--a);overflow:hidden;border:1px solid var(--e)}.progress-fill{height:100%;background:var(--f)}.weights{font-size:13px}.meta{font-size:12px;color:var(--d);overflow-wrap:anywhere}.muted{color:var(--d)}.row{display:flex;gap:8px;flex-wrap:wrap}.use-row{align-items:center}.use-input{width:80px;flex:none}.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px;z-index:50}.modal{background:var(--b);border-radius:12px;max-width:480px;width:100%;max-height:90vh;overflow:auto;border:1px solid var(--e)}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 0}.modal-body{padding:14px}.field{margin-bottom:10px}.field label{display:block;font-size:12px;color:var(--d);margin-bottom:4px}.subform{border:1px dashed var(--e);border-radius:10px;padding:10px;margin:6px 0 10px}fieldset{border:none;padding:0;margin:0}.row-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--e)}.ri-main{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row-actions{display:flex;gap:6px;flex:none}#toast-root{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center;width:calc(100% - 32px)}.toast{background:var(--c);color:var(--a);padding:10px 16px;border-radius:8px;font-size:13px;max-width:420px;text-align:center;opacity:1;transition:opacity .3s}.toast.out{opacity:0}</style>
+</head>
+<body>
+<div class="topbar">
+  <h1 data-i18n="title">microspool</h1>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="spools" data-i18n="tabSpools"></button>
+    <button class="tab-btn" data-tab="filaments" data-i18n="tabFilaments"></button>
+    <button class="tab-btn" data-tab="settings" data-i18n="tabSettings"></button>
+  </nav>
+</div>
+<main>
+  <section id="view-spools" class="view">
+    <div class="toolbar">
+      <input id="search-input" type="search" data-i18n-ph="search">
+      <label class="chk"><input type="checkbox" id="chk-archived"><span data-i18n="showArchived"></span></label>
+      <button class="btn btn-primary" data-act="add-spool" data-i18n="addSpool"></button>
+    </div>
+    <div id="spool-grid" class="grid"></div>
+  </section>
+  <section id="view-filaments" class="view" hidden>
+    <div class="toolbar">
+      <button class="btn btn-primary" data-act="add-filament" data-i18n="addFilament"></button>
+      <button class="btn" data-act="add-vendor" data-i18n="addVendor"></button>
+    </div>
+    <h2 data-i18n="filamentsTitle"></h2>
+    <div id="filament-list"></div>
+    <h2 data-i18n="vendorsTitle"></h2>
+    <div id="vendor-list"></div>
+  </section>
+  <section id="view-settings" class="view" hidden>
+    <div class="field"><label data-i18n="moonrakerUrl"></label><input id="settings-moonraker-url" type="text"></div>
+    <p class="muted" data-i18n="moonrakerHint"></p>
+    <button class="btn btn-primary" id="btn-save-settings" data-i18n="save"></button>
+  </section>
+</main>
+<div id="modal-root" hidden></div>
+<div id="toast-root"></div>
+<script>
+(()=>{
+"use strict";
+var STR={en:{
+title:"microspool",tabSpools:"Spools",tabFilaments:"Filaments",tabSettings:"Settings",
+search:"Search…",showArchived:"Show archived",addSpool:"+ Add spool",
+location:"Location",comment:"Comment",bL:"Use",bK:"g",bJ:"Edit",bH:"Delete",
+bC:"Archive",bw:"Unarchive",bF:"Active",bs:"Make active",
+save:"Save",bG:"Cancel",bl:"Delete this?",
+bB:"No spools yet.",bk:"Add spool",bj:"Spool",
+filament:"Filament",bi:"Choose filament",bq:"New filament…",
+bI:"Brand",bA:"New brand…",bu:"Brand name",
+name:"Name",material:"Material",color:"Color",density:"Density (g/cm³)",
+diameter:"Diameter (mm)",bx:"Net weight (g)",bd:"Empty spool (g)",
+bt:"Nozzle temp (°C)",bD:"Bed temp (°C)",
+bm:"Initial weight (g)",bf:"Remaining weight (g)",
+bg:"This spool, empty (g)",
+extra:"Extra fields",
+filamentsTitle:"Filaments",vendorsTitle:"Brands",addFilament:"+ Add filament",addVendor:"+ Add brand",
+moonrakerUrl:"Moonraker URL",moonrakerHint:"Active-spool badge; hidden if unreachable.",
+bE:"Saved",bh:"used",
+bv:"Enter grams > 0",
+aI:"Moonraker unreachable"
+},ru:{
+title:"microspool",tabSpools:"Катушки",tabFilaments:"Филаменты",tabSettings:"Настройки",
+search:"Поиск…",showArchived:"Показать архивные",addSpool:"+ Добавить катушку",
+location:"Место",comment:"Комментарий",bL:"Списать",bK:"г",bJ:"Правка",bH:"Удалить",
+bC:"В архив",bw:"Из архива",bF:"Активна",bs:"Сделать активной",
+save:"Сохранить",bG:"Отмена",bl:"Удалить?",
+bB:"Пока нет катушек.",bk:"Добавить катушку",bj:"Катушка",
+filament:"Филамент",bi:"Выбрать филамент",bq:"Новый филамент…",
+bI:"Бренд",bA:"Новый бренд…",bu:"Название бренда",
+name:"Название",material:"Материал",color:"Цвет",density:"Плотность (г/см³)",
+diameter:"Диаметр (мм)",bx:"Вес нетто (г)",bd:"Пустая катушка (г)",
+bt:"Темп. сопла (°C)",bD:"Темп. стола (°C)",
+bm:"Начальный вес (г)",bf:"Остаток (г)",
+bg:"Эта катушка, пустая (г)",
+extra:"Доп. поля",
+filamentsTitle:"Филаменты",vendorsTitle:"Бренды",addFilament:"+ Добавить филамент",addVendor:"+ Добавить бренд",
+moonrakerUrl:"Адрес Moonraker",moonrakerHint:"Бейдж активной катушки; скрыт, если недоступен.",
+bE:"Сохранено",bh:"списано",
+bv:"Введите граммы > 0",
+aI:"Moonraker недоступен"
+}};
+var LANG=((navigator.language||"en").toLowerCase().indexOf("ru")===0)?"ru":"en";
+var T=STR[LANG];
+document.documentElement.lang=LANG;
+function aa(){
+  document.querySelectorAll("[data-i18n]").forEach((el)=>{var k=el.getAttribute("data-i18n");if(T[k]!=null)el.textContent=T[k];});
+  document.querySelectorAll("[data-i18n-ph]").forEach((el)=>{var k=el.getAttribute("data-i18n-ph");if(T[k]!=null)el.placeholder=T[k];});
+}
+var DENSITY={PLA:1.24,PETG:1.27,ABS:1.04,ASA:1.07,TPU:1.21,PA:1.14,PC:1.20};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,(c)=>{return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function ab(k,def){try{var v=localStorage.getItem(k);return v==null?def:v;}catch(e){return def;}}
+function ac(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function ad(id){var el=document.getElementById(id);if(!el)return null;var v=el.value;if(v==="")return null;var n=parseFloat(v);return isFinite(n)?n:null;}
+function ae(msg){var root=document.getElementById("toast-root");var d=document.createElement("div");d.className="toast";d.textContent=String(msg);root.appendChild(d);setTimeout(()=>{d.classList.add("out");setTimeout(()=>{d.remove();},300);},3200);}
+function ecf(err){ae(err.message||String(err));}
+function rr(p,l,r){p.then(l).then(r).catch(ecf);}
+function btn(label,act,id,cls){return '<button class="btn'+(cls?" "+cls:"")+'" data-act="'+act+'"'+(id!=null?' data-id="'+id+'"':"")+'>'+label+"</button>";}
+function fld(label,html){return '<div class="field"><label>'+label+"</label>"+html+"</div>";}
+function ipt(id,attrs,val){return '<input id="'+id+'"'+(attrs||"")+' value="'+(val==null?"":val)+'">';}
+function g2(a,b){return '<div class="grid2">'+a+(b||"")+"</div>";}
+function nf(id,label,val,extra){return fld(label,ipt(id,' type="number"'+(extra||""),val==null?"":val));}
+function nb(body,field,id){var v=ad(id);if(v!=null)body[field]=v;}
+function gv(id){return document.getElementById(id).value.trim();}
+function sb(body,field,id){var v=gv(id);if(v)body[field]=v;}
+function api(method,path,body){
+  var opts={method:method};
+  if(body!==undefined){opts.headers={"Content-Type":"application/json"};opts.body=JSON.stringify(body);}
+  return fetch(path,opts).then((res)=>{
+    return res.text().then((text)=>{
+      var data=null;
+      if(text){try{data=JSON.parse(text);}catch(e){}}
+      if(!res.ok){var msg=(data&&data.message)?data.message:(res.status+" "+res.statusText);var err=new Error(msg);err.status=res.status;throw err;}
+      return data;
+    });
+  });
+}
+var aH={sp:[],fi:[],ve:[],showArchived:false,search:"",bo:null,bc:false,moonrakerUrl:ab("ms_moonraker_url","")};
+function af(){return "http://"+location.hostname+":7125";}
+function ag(){return (aH.moonrakerUrl||af()).replace(/\/$/,"");}
+function ah(){var q=aH.showArchived?"?allow_archived=true":"";return api("GET","/api/v1/spool"+q).then((d)=>{aH.sp=d||[];});}
+function ai(){return api("GET","/api/v1/filament").then((d)=>{aH.fi=d||[];});}
+function aj(){return api("GET","/api/v1/vendor").then((d)=>{aH.ve=d||[];});}
+function ak(){return Promise.all([ah(),ai(),aj()]).catch((e)=>{ae(e.message||String(e));}).then(()=>{ap();as();});}
+function al(extra){
+  var out={};
+  if(!extra)return out;
+  Object.keys(extra).forEach((k)=>{
+    var raw=extra[k],v;
+    try{var p=JSON.parse(raw);v=(typeof p==="string")?p:JSON.stringify(p);}catch(e){v=raw;}
+    out[k]=v;
+  });
+  return out;
+}
+function am(){
+  var obj={};
+  document.getElementById("extra-text").value.split("\n").forEach((line)=>{
+    var i=line.indexOf(":");
+    if(i<0)return;
+    var k=line.slice(0,i).trim(),v=line.slice(i+1).trim();
+    if(k)obj[k]=JSON.stringify(v);
+  });
+  return obj;
+}
+function ao(s){
+  if(!aH.search)return true;
+  var q=aH.search.toLowerCase();
+  var f=s.filament||{},v=f.vendor||{};
+  var hay=[f.name,v.name,f.material,s.location,s.comment].filter(Boolean).join(" ").toLowerCase();
+  return hay.indexOf(q)!==-1;
+}
+function ap(){
+  var grid=document.getElementById("spool-grid");
+  var list=aH.sp.filter(ao);
+  if(!list.length){grid.innerHTML='<p class="muted">'+esc(T.bB)+"</p>";return;}
+  grid.innerHTML="";
+  list.forEach((s)=>{grid.appendChild(aq(s));});
+}
+function aq(s){
+  var f=s.filament||{},v=f.vendor||{};
+  var color=f.color_hex?("#"+f.color_hex):"#888888";
+  var aT=typeof s.initial_weight==="number";
+  var ba=aT?Math.max(0,s.remaining_weight||0):0;
+  var pct=(aT&&s.initial_weight>0)?Math.min(100,Math.max(0,(ba/s.initial_weight)*100)):0;
+  var aU=aH.bc&&aH.bo===s.id;
+  var title=(v.name?v.name+" ":"")+(f.name||("#"+(f.id||"?")));
+  var div=document.createElement("div");
+  div.className="card"+(s.archived?" archived":"");
+  div.innerHTML=
+    '<div class="card-head"><span class="dot" style="background:'+esc(color)+'"></span>'
+    +'<div class="card-title"><div class="ct-name">'+esc(title)+'</div><div class="ct-sub">'+esc(f.material||"")+'</div></div>'
+    +(aU?'<span class="badge badge-good">'+T.bF+'</span>':"")+'</div>'
+    +(aT
+      ?'<div class="progress"><div class="progress-fill" style="width:'+pct.toFixed(0)+'%"></div></div><div class="weights">'+ba.toFixed(0)+" / "+s.initial_weight.toFixed(0)+" g</div>"
+      :'<div class="weights">'+T.bh+" "+(s.used_weight||0).toFixed(0)+" g</div>")
+    +(s.location?'<div class="meta">📍 '+esc(s.location)+"</div>":"")
+    +(s.comment?'<div class="meta muted">'+esc(s.comment)+"</div>":"")
+    +'<div class="row use-row"><input type="number" class="use-input" placeholder="'+esc(T.bK)+'" min="0" step="1">'+btn(T.bL,"use",s.id)+"</div>"
+    +'<div class="row actions">'+btn(T.bJ,"edit-spool",s.id)
+      +(s.archived?btn(T.bw,"unarchive-spool",s.id):btn(T.bC,"archive-spool",s.id))
+      +((aH.bc&&!aU)?btn(T.bs,"make-active",s.id):"")
+      +btn(T.bH,"delete-spool",s.id,"btn-danger")+"</div>";
+  return div;
+}
+function ar(mainHtml,editAct,delAct,id){
+  return '<div class="row-item"><div class="ri-main">'+mainHtml+'</div><div class="row-actions">'+btn(T.bJ,editAct,id)+btn(T.bH,delAct,id,"btn-danger")+"</div></div>";
+}
+function as(){
+  var fl=document.getElementById("filament-list");
+  fl.innerHTML=aH.fi.map((f)=>{
+    var color=f.color_hex?("#"+f.color_hex):"#888888";
+    var title=(f.vendor?f.vendor.name+" ":"")+(f.name||("#"+f.id));
+    return ar('<span class="dot" style="background:'+esc(color)+'"></span> <b>'+esc(title)+'</b> <span class="muted">'+esc(f.material||"")+"</span>","edit-filament","delete-filament",f.id);
+  }).join("")||'<p class="muted">—</p>';
+  var vl=document.getElementById("vendor-list");
+  vl.innerHTML=aH.ve.map((v)=>{
+    return ar("<b>"+esc(v.name)+"</b>","edit-vendor","delete-vendor",v.id);
+  }).join("")||'<p class="muted">—</p>';
+}
+function at(titleText,bodyHtml){
+  var root=document.getElementById("modal-root");
+  root.innerHTML='<div class="overlay"><div class="modal"><div class="modal-head"><h3>'+esc(titleText)+'</h3><button class="btn-icon" type="button" data-act="close-modal">✕</button></div><div class="modal-body">'+bodyHtml+"</div></div></div>";
+  root.hidden=false;
+}
+function au(){var root=document.getElementById("modal-root");root.innerHTML="";root.hidden=true;}
+function av(){return '<div class="row actions"><button type="submit" class="btn btn-primary">'+T.save+'</button><button type="button" class="btn" data-act="close-modal">'+T.bG+"</button></div>";}
+function aw(aM,f){
+  return fld(T.bI,'<select id="ff-vendor"><option value="">—</option>'+aM+'<option value="__new__">'+T.bA+"</option></select>")
+    +'<fieldset id="new-vendor-fields" class="subform" hidden>'+fld(T.bu,ipt("fv-name","",""))+"</fieldset>"
+    +g2(fld(T.name,ipt("ff-name","",f?esc(f.name||""):"")),fld(T.material,ipt("ff-material",'',f?esc(f.material||""):"")))
+    +g2(fld(T.color,ipt("ff-color",' type="color"',f&&f.color_hex?("#"+esc(f.color_hex)):"#2266cc")),nf("ff-density",T.density,f?f.density:1.24,' step="0.01" min="0.01"'))
+    +g2(nf("ff-diameter",T.diameter,f?f.diameter:1.75,' step="0.01" min="0.01"'),nf("ff-weight",T.bx,f&&f.weight!=null?f.weight:1000,' step="1"'))
+    +nf("ff-spoolweight",T.bd,f&&f.spool_weight!=null?f.spool_weight:"",' step="1"')
+    +g2(nf("ff-noztemp",T.bt,f&&f.settings_extruder_temp!=null?f.settings_extruder_temp:""),nf("ff-bedtemp",T.bD,f&&f.settings_bed_temp!=null?f.settings_bed_temp:""));
+}
+function ax(){
+  var body={};
+  sb(body,"name","ff-name");
+  sb(body,"material","ff-material");
+  var color=document.getElementById("ff-color").value;if(color)body.color_hex=color.replace("#","");
+  nb(body,"density","ff-density");
+  nb(body,"diameter","ff-diameter");
+  nb(body,"weight","ff-weight");
+  nb(body,"spool_weight","ff-spoolweight");
+  var noz=ad("ff-noztemp");if(noz!=null)body.settings_extruder_temp=Math.round(noz);
+  var bed=ad("ff-bedtemp");if(bed!=null)body.settings_bed_temp=Math.round(bed);
+  return body;
+}
+function ay(){
+  var sel=document.getElementById("ff-vendor");
+  var vSel=sel?sel.value:"";
+  if(vSel==="__new__"){
+    var aW=gv("fv-name");
+    if(!aW)return Promise.reject(new Error(T.bu));
+    return api("POST","/api/v1/vendor",{name:aW}).then((v)=>{aH.ve.push(v);return v.id;});
+  } else if(vSel){return Promise.resolve(parseInt(vSel,10));}
+  return Promise.resolve(null);
+}
+function az(){
+  return ay().then((aS)=>{
+    var body=ax();
+    if(body.density==null)body.density=1.24;
+    if(body.diameter==null)body.diameter=1.75;
+    if(aS!=null)body.vendor_id=aS;
+    return api("POST","/api/v1/filament",body);
+  }).then((f)=>{aH.fi.push(f);return f.id;});
+}
+function aA(p){
+  var aJ=!!p;
+  var aL=aH.fi.map((f)=>{
+    var sel=(p&&p.filament&&p.filament.id===f.id)?" selected":"";
+    var label=((f.vendor?f.vendor.name+" ":"")+(f.name||("#"+f.id))+(f.material?" — "+f.material:""));
+    return '<option value="'+f.id+'"'+sel+">"+esc(label)+"</option>";
+  }).join("");
+  var aM=aH.ve.map((v)=>{return '<option value="'+v.id+'">'+esc(v.name)+"</option>";}).join("");
+  var aN=al(p?p.extra:null);
+  var aO=Object.keys(aN).map((k)=>{return k+": "+aN[k];}).join("\n");
+  var aP=!aJ
+    ?(fld(T.filament,'<select id="sf-filament" required><option value="">'+T.bi+"</option>"+aL+'<option value="__new__">'+T.bq+"</option></select>")
+      +'<fieldset id="new-filament-fields" class="subform" hidden>'+aw(aM,null)+"</fieldset>")
+    :fld(T.filament,"<div>"+esc((p.filament&&p.filament.vendor?p.filament.vendor.name+" ":"")+(p.filament?p.filament.name||"":""))+"</div>");
+  var body='<form id="p-form">'+aP
+    +g2(nf("sp-initial",T.bm,aJ&&p.initial_weight!=null?p.initial_weight:"",' step="0.1"'),nf("sp-remaining",T.bf,aJ&&p.remaining_weight!=null?p.remaining_weight:"",' step="0.1"'))
+    +nf("sp-spoolweight",T.bg,aJ&&p.spool_weight!=null?p.spool_weight:"",' step="0.1"')
+    +g2(fld(T.location,ipt("sp-location",'',aJ?esc(p.location||""):"")),fld(T.comment,ipt("sp-comment","",aJ?esc(p.comment||""):"")))
+    +fld(T.extra,'<textarea id="extra-text" rows="3">'+esc(aO)+"</textarea>")
+    +av()+"</form>";
+  at(aJ?T.bj:T.bk,body);
+  document.getElementById("p-form").addEventListener("submit",(e)=>{aB(e,p);});
+}
+function aB(e,aK){
+  e.preventDefault();
+  var aQ;
+  if(!aK){
+    var sel=document.getElementById("sf-filament").value;
+    if(!sel){ae(T.bi);return;}
+    aQ=(sel==="__new__")?az():Promise.resolve(parseInt(sel,10));
+  } else {aQ=Promise.resolve(null);}
+  aQ.then((aR)=>{
+    var body={};
+    if(!aK)body.filament_id=aR;
+    nb(body,"initial_weight","sp-initial");
+    nb(body,"remaining_weight","sp-remaining");
+    nb(body,"spool_weight","sp-spoolweight");
+    sb(body,"location","sp-location");
+    sb(body,"comment","sp-comment");
+    body.extra=am();
+    return aK?api("PATCH","/api/v1/spool/"+aK.id,body):api("POST","/api/v1/spool",body);
+  }).then(()=>{au();ae(T.bE);return ah();}).then(()=>{ap();}).catch(ecf);
+}
+function aC(f){
+  var aJ=!!f;
+  var aM=aH.ve.map((v)=>{
+    var sel=(f&&f.vendor&&f.vendor.id===v.id)?" selected":"";
+    return '<option value="'+v.id+'"'+sel+">"+esc(v.name)+"</option>";
+  }).join("");
+  var body='<form id="filament-form">'+aw(aM,f)+av()+"</form>";
+  at(aJ?(f.name||T.filament):T.addFilament,body);
+  document.getElementById("filament-form").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    ay().then((aS)=>{
+      var aX=ax();
+      if(aS!=null)aX.vendor_id=aS;
+      if(aJ)return api("PATCH","/api/v1/filament/"+f.id,aX);
+      if(aX.density==null)aX.density=1.24;
+      if(aX.diameter==null)aX.diameter=1.75;
+      return api("POST","/api/v1/filament",aX);
+    }).then(()=>{au();ae(T.bE);return Promise.all([ai(),aj()]);}).then(()=>{as();ap();}).catch(ecf);
+  });
+}
+function aD(v){
+  var aJ=!!v;
+  var body='<form id="vendor-form">'+fld(T.bu,ipt("vf-name",' required',v?esc(v.name):""))+fld(T.comment,ipt("vf-comment","",v&&v.comment?esc(v.comment):""))+av()+"</form>";
+  at(aJ?v.name:T.addVendor,body);
+  document.getElementById("vendor-form").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    var name=gv("vf-name");
+    if(!name)return;
+    var comment=gv("vf-comment");
+    var aX={name:name};if(comment)aX.comment=comment;
+    (aJ?api("PATCH","/api/v1/vendor/"+v.id,aX):api("POST","/api/v1/vendor",aX))
+      .then(()=>{au();ae(T.bE);return aj();}).then(()=>{as();}).catch(ecf);
+  });
+}
+function aE(){
+  var url=ag();
+  return fetch(url+"/server/spoolman/spool_id").then((res)=>{if(!res.ok)throw new Error("bad status");return res.json();})
+    .then((data)=>{aH.bo=(data&&data.result)?data.result.spool_id:null;aH.bc=true;})
+    .catch(()=>{aH.bc=false;aH.bo=null;})
+    .then(()=>{ap();});
+}
+function aF(id){
+  var url=ag();
+  return fetch(url+"/server/spoolman/spool_id",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({spool_id:id})})
+    .then((res)=>{if(!res.ok)throw new Error("bad status");aH.bo=id;ap();})
+    .catch(()=>{ae(T.aI);});
+}
+function aG(tab){
+  document.querySelectorAll(".tab-btn").forEach((b)=>{b.classList.toggle("active",b.dataset.tab===tab);});
+  document.querySelectorAll(".view").forEach((v)=>{v.hidden=(v.id!=="view-"+tab);});
+}
+document.body.addEventListener("click",(e)=>{
+  if(e.target.classList&&e.target.classList.contains("overlay")){au();return;}
+  if(e.target.classList&&e.target.classList.contains("tab-btn")){aG(e.target.dataset.tab);return;}
+  var aY=e.target.closest("[data-act]");
+  if(!aY)return;
+  var act=aY.dataset.act;
+  var aZ=aY.dataset.id;
+  var id=aZ?parseInt(aZ,10):null;
+  if(act==="close-modal"){au();return;}
+  if(act==="add-spool"){aA(null);return;}
+  if(act==="add-filament"){aC(null);return;}
+  if(act==="add-vendor"){aD(null);return;}
+  if(act==="edit-spool"){aA(aH.sp.find((x)=>{return x.id===id;}));return;}
+  if(act==="edit-filament"){aC(aH.fi.find((x)=>{return x.id===id;}));return;}
+  if(act==="edit-vendor"){aD(aH.ve.find((x)=>{return x.id===id;}));return;}
+  if(act==="use"){
+    var card=aY.closest(".card");
+    var input=card.querySelector(".use-input");
+    var val=parseFloat(input.value);
+    if(!isFinite(val)||val<=0){ae(T.bv);return;}
+    rr(api("PUT","/api/v1/spool/"+id+"/use",{use_weight:val}),ah,ap);
+    return;
+  }
+  if(act==="archive-spool"||act==="unarchive-spool"){
+    rr(api("PATCH","/api/v1/spool/"+id,{archived:act==="archive-spool"}),ah,ap);
+    return;
+  }
+  if(act==="delete-spool"||act==="delete-filament"||act==="delete-vendor"){
+    if(!confirm(T.bl))return;
+    var dm={spool:[ah,ap],filament:[ai,as],vendor:[aj,as]}[act.slice(7)];
+    rr(api("DELETE","/api/v1/"+act.slice(7)+"/"+id),dm[0],dm[1]);
+    return;
+  }
+  if(act==="make-active"){aF(id);return;}
+});
+document.body.addEventListener("change",(e)=>{
+  var t=e.target;
+  if(t.id==="sf-filament"){var el=document.getElementById("new-filament-fields");if(el)el.hidden=(t.value!=="__new__");}
+  else if(t.id==="ff-vendor"){var el2=document.getElementById("new-vendor-fields");if(el2)el2.hidden=(t.value!=="__new__");}
+  else if(t.id==="ff-material"){var dEl=document.getElementById("ff-density");var aV=DENSITY[t.value.trim().toUpperCase()];if(aV!=null&&dEl&&!dEl.dataset.touched)dEl.value=aV;}
+});
+document.body.addEventListener("input",(e)=>{if(e.target.id==="ff-density")e.target.dataset.touched="1";});
+function init(){
+  aa();
+  document.getElementById("settings-moonraker-url").value=aH.moonrakerUrl;
+  document.getElementById("settings-moonraker-url").placeholder=af();
+  document.getElementById("chk-archived").addEventListener("change",(e)=>{
+    aH.showArchived=e.target.checked;
+    ah().then(ap).catch(ecf);
+  });
+  document.getElementById("search-input").addEventListener("input",(e)=>{aH.search=e.target.value;ap();});
+  document.getElementById("btn-save-settings").addEventListener("click",()=>{
+    var v=gv("settings-moonraker-url");
+    aH.moonrakerUrl=v;ac("ms_moonraker_url",v);
+    ae(T.bE);
+    aE();
+  });
+  ak().then(()=>{aE();});
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
+</script>
+</body>
+</html>

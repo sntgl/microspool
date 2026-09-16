@@ -1,0 +1,6 @@
+/microspool
+/build/
+*.o
+__pycache__/
+*.json.tmp
+/contrib/adv5m/

@@ -1,0 +1,15 @@
+# Example systemd unit for a generic Linux Klipper host (not tested on real hardware — adjust paths/user).
+#   sudo install -m755 microspool-aarch64 /usr/local/bin/microspool
+#   sudo install -m644 microspool.service /etc/systemd/system/ && sudo systemctl enable --now microspool
+[Unit]
+Description=microspool — tiny Spoolman-compatible spool server
+Before=moonraker.service
+
+[Service]
+User=pi
+ExecStart=/usr/local/bin/microspool -l 127.0.0.1 -p 7912 -d /home/pi/printer_data/microspool.json
+Restart=on-failure
+Nice=10
+
+[Install]
+WantedBy=multi-user.target
