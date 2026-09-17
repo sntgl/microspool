@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-09-17
+
+- Web UI: clearing the location/comment fields now actually clears them (empty values were skipped).
+- `-k <seconds>` sets the server-side WebSocket ping interval (`-k 0` disables it); the default stays 20 s.
+- README: Fluidd verified on a real printer; note that its “Manage spools” button resolves a loopback
+  Spoolman host to the printer's address by itself.
+
 ## 0.2.0 — 2026-09-15
 
 - Built-in web UI (single `ui/index.html`, gzip-embedded in the binary): spool cards with

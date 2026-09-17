@@ -7,7 +7,7 @@
 #   make size      size/format of the release binaries
 #   make clean
 
-VERSION     ?= 0.2.0
+VERSION     ?= 0.2.1
 CC_NATIVE   ?= cc
 PYTHON3     ?= python3
 CFLAGS      := -std=c11 -Wall -Wextra -O2 -Ivendor -I. -DMICROSPOOL_VERSION=\"$(VERSION)\"

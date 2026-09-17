@@ -20,7 +20,9 @@ host can run Spoolman, run Spoolman. Independent project, not affiliated with it
 
 - Moonraker `[spoolman]` — tested on a real AD5M (connection, proxy, usage reports).
 - HelixScreen — should work (same API calls), on-device check pending.
-- Fluidd/Mainsail spool panels — not tested.
+- Fluidd — tested on a real printer (spool panel, spool selection). Mainsail — not tested.
+- Fluidd's “Manage spools” button opens the built-in UI even with `server: http://127.0.0.1:7912` —
+  it swaps a loopback host for the printer's address. Keep the loopback setting; only the UI port is on the LAN.
 
 ## Build
 

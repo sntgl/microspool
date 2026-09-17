@@ -108,7 +108,7 @@ function g2(a,b){return '<div class="grid2">'+a+(b||"")+"</div>";}
 function nf(id,label,val,extra){return fld(label,ipt(id,' type="number"'+(extra||""),val==null?"":val));}
 function nb(body,field,id){var v=ad(id);if(v!=null)body[field]=v;}
 function gv(id){return document.getElementById(id).value.trim();}
-function sb(body,field,id){var v=gv(id);if(v)body[field]=v;}
+function sb(body,field,id){body[field]=gv(id);}
 function api(method,path,body){
   var opts={method:method};
   if(body!==undefined){opts.headers={"Content-Type":"application/json"};opts.body=JSON.stringify(body);}

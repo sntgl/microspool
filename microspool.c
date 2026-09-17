@@ -54,10 +54,11 @@
 #define LISTEN_BACKLOG  16
 
 #define HTTP_IDLE_TIMEOUT_S   10
-#define WS_PING_INTERVAL_S    20
+#define WS_PING_INTERVAL_S    20      /* по умолчанию; -k задаёт своё, -k 0 отключает пинги сервера */
 #define USE_FLUSH_INTERVAL_S  30
 
 /* Версия Spoolman API, которую мы изображаем в /api/v1/info (клиенты сверяют), и собственная версия. */
+static int g_ws_ping_interval = WS_PING_INTERVAL_S;
 static const char *SERVER_VERSION = "0.22.1";
 #ifndef MICROSPOOL_VERSION
 #define MICROSPOOL_VERSION "0.1.0"
@@ -2135,6 +2136,7 @@ int main(int argc, char **argv) {
         if (strcmp(argv[i], "-l") == 0 && i + 1 < argc) g_listen_addr = argv[++i];
         else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) g_listen_port = atoi(argv[++i]);
         else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) g_data_path = argv[++i];
+        else if (strcmp(argv[i], "-k") == 0 && i + 1 < argc) g_ws_ping_interval = atoi(argv[++i]);
         else if (strcmp(argv[i], "-v") == 0) g_verbose = 1;
         else if (strcmp(argv[i], "-U") == 0) g_ui_enabled = 0;
         else if (strcmp(argv[i], "-V") == 0 || strcmp(argv[i], "--version") == 0) {
@@ -2260,7 +2262,7 @@ int main(int argc, char **argv) {
             Conn *c = &g_conns[i];
             if (!c->in_use) continue;
             if (c->is_ws) {
-                if (now - c->last_ping_sent_mono >= WS_PING_INTERVAL_S) {
+                if (g_ws_ping_interval > 0 && now - c->last_ping_sent_mono >= g_ws_ping_interval) {
                     ws_send_frame(c, 0x9, NULL, 0);
                     c->last_ping_sent_mono = now;
                     conn_try_flush(c);
